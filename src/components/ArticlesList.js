@@ -42,9 +42,9 @@ export class ArticlesList extends React.Component{
 			let articlesCards = items.map(function(item){
 				return <Card key={item.id}>
 					<Card.Body>
-						<Card.Title>Hey</Card.Title>
+						<Card.Title>{item.attributes.title}</Card.Title>
 						<Card.Text>
-							{item.attributes.title}
+
 						</Card.Text>
 					</Card.Body>
 					<Card.Footer>
