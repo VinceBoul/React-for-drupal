@@ -6,14 +6,16 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import {ArticlesList} from "./components/ArticlesList";
 import {Header} from "./components/header";
+import {DrupalLogs} from "./components/DrupalLogs";
 
 ReactDOM.render(
   <React.StrictMode>
       <Router>
-      <Header />
+          <Header />
           <Switch>
               <Route exact path="/" component={App} />
               <Route path="/articles" component={ArticlesList} />
+              <Route path="/drupal-logs" component={DrupalLogs} />
           </Switch>
       </Router>
   </React.StrictMode>,

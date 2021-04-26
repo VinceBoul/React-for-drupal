@@ -1,5 +1,5 @@
 import React from "react";
-import { CardDeck, Card} from "react-bootstrap";
+import {Col,Container, Row, Card, Dropdown} from "react-bootstrap";
 import axios from "axios";
 import Moment from 'moment';
 
@@ -7,56 +7,111 @@ export class ArticlesList extends React.Component{
 	constructor(props) {
 		super(props)
 		this.state = {
-			items: []
+			token: null,
+			images: [],
+			articles: [],
+			dateOrder: 'DESC'
 		}
+
+	}
+
+	loadArticles(order, tagName= null) {
+
+		let apiUrl = 'http://drupal.afup.local/jsonapi/node/article?include=field_image,field_tags&sort[sort-date][path]=created&sort[sort-date][direction]='+order;
+
+		if (tagName){
+			apiUrl += '&filter[taxonomy_term--tags][condition][path]=field_tags.name&filter[taxonomy_term--tags][condition][operator]=IN&filter[taxonomy_term--tags][condition][value][]='+tagName
+		}
+
+		axios
+			.get(apiUrl, {
+				headers: {
+					'X-CSRF-Token': this.state.token,
+					'Content-type': 'application/json'
+				}
+			})
+			.then(response => {
+				this.setState({
+					articles: response.data.data,
+					images: response.data.included
+				})
+			})
 	}
 
 	componentDidMount() {
-		let that = this;
 
 		axios.get('http://drupal.afup.local/session/token')
 			.then(tokenResponse => {
-				axios
-					.get(`http://drupal.afup.local/jsonapi/node/article`, {
-						headers: {
-							'X-CSRF-Token': tokenResponse.data,
-							'Content-type': 'application/json'
-						}
-					})
-					.then(response => {
-						that.setState({
-							items: response.data.data,
-						})
-					})
+				this.setState({
+					token : tokenResponse.data
+				})
+				this.loadArticles(this.state.dateOrder)
 			})
 	}
 
 	render() {
-		const { items } = this.state
-		if (!items) {                                        // added this line
+		const { articles, images } = this.state
+		if (!articles) {                                        // added this line
 			return <div>Hold tight while items are being fetched...</div>;  // added this line
 		}else{
 
-			Moment.locale('fr');
 
-			let articlesCards = items.map(function(item){
-				return <Card key={item.id}>
-					<Card.Body>
-						<Card.Title>{item.attributes.title}</Card.Title>
-						<Card.Text>
+			let articlesTags = images.filter(element => element.type.startsWith('taxonomy_term'));
 
-						</Card.Text>
-					</Card.Body>
-					<Card.Footer>
-						<small className="text-muted">{ Moment(item.attributes.changed).format('MMM YYYY') }</small>
-					</Card.Footer>
-				</Card>
+			articles.map(function(item, index){
+
+				item.tags = item.relationships.field_tags.data.map((tag) => {
+					return articlesTags.filter(el => el.id === tag.id );
+				});
+				return item;
+			})
+
+			console.log(articles)
+			let that = this;
+
+			let articlesCards = articles.map(function(item, index){
+
+				let articleLinks = item.tags.map((tag) => {
+						return <Card.Link onClick={() =>{ that.loadArticles('DESC', tag[0].attributes.name) } } key={ 'tag' + tag[0].id + item.id}>{ tag[0].attributes.name }</Card.Link>
+				});
+
+				return <Col key={item.id}>
+					<Card>
+						<Card.Img variant="top" src= { 'http://drupal.afup.local'+images[index].attributes.uri.url } />
+						<Card.Body key={'body-text'+item.id}>
+							<Card.Title>{item.attributes.title}</Card.Title>
+							<Card.Text>
+								{item.attributes.body.summary}
+							</Card.Text>
+						</Card.Body>
+						<Card.Body key={'body-links'+item.id}>{articleLinks}</Card.Body>
+						<Card.Footer>
+							<small className="text-muted">{ Moment(item.attributes.created).format('d MMM YYYY') }</small>
+						</Card.Footer>
+					</Card>
+				</Col>
 			});
 
 			return(
-				<CardDeck>
-					{ articlesCards }
-				</CardDeck>
+				<Container>
+					<Row className={'my-3'}>
+						<Col>
+							<Dropdown>
+								<Dropdown.Toggle variant="success" id="dropdown-basic">
+									Trier par date
+								</Dropdown.Toggle>
+
+								<Dropdown.Menu>
+									<Dropdown.Item onClick={() =>{ this.loadArticles('DESC') } } >Le plus récent d'abord</Dropdown.Item>
+									<Dropdown.Item onClick={() =>{ this.loadArticles('ASC') } }>Le plus ancien d'abord</Dropdown.Item>
+								</Dropdown.Menu>
+							</Dropdown>
+						</Col>
+					</Row>
+					<Row xs={1} md={3}>
+						{ articlesCards }
+					</Row>
+				</Container>
 			)
 		}
 

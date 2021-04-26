@@ -18,6 +18,9 @@ export class Header extends React.Component{
 					<LinkContainer to="/articles">
 						<Nav.Link>Articles</Nav.Link>
 					</LinkContainer>
+					<LinkContainer to="/drupal-logs">
+						<Nav.Link>Logs</Nav.Link>
+					</LinkContainer>
 				</Nav>
 				<Form inline>
 					<FormControl type="text" placeholder="Search" className="mr-sm-2" />
