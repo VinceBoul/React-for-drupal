@@ -51,10 +51,9 @@ export class ArticlesList extends React.Component{
 
 	render() {
 		const { articles, images } = this.state
-		if (!articles) {                                        // added this line
+		if (!articles && !images) {                                        // added this line
 			return <div>Hold tight while items are being fetched...</div>;  // added this line
 		}else{
-
 
 			let articlesTags = images.filter(element => element.type.startsWith('taxonomy_term'));
 
@@ -66,7 +65,6 @@ export class ArticlesList extends React.Component{
 				return item;
 			})
 
-			console.log(articles)
 			let that = this;
 
 			let articlesCards = articles.map(function(item, index){
@@ -75,9 +73,15 @@ export class ArticlesList extends React.Component{
 						return <Card.Link onClick={() =>{ that.loadArticles('DESC', tag[0].attributes.name) } } key={ 'tag' + tag[0].id + item.id}>{ tag[0].attributes.name }</Card.Link>
 				});
 
+				let articleImg;
+
+				if (images[index].hasOwnProperty('attributes') && images[index].attributes.hasOwnProperty('uri')){
+					articleImg = <Card.Img variant="top" src= { 'http://drupal.afup.local'+images[index].attributes.uri.url } />
+				}
+
 				return <Col key={item.id}>
 					<Card>
-						<Card.Img variant="top" src= { 'http://drupal.afup.local'+images[index].attributes.uri.url } />
+						{ articleImg }
 						<Card.Body key={'body-text'+item.id}>
 							<Card.Title>{item.attributes.title}</Card.Title>
 							<Card.Text>

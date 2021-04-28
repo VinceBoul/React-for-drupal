@@ -1,10 +1,6 @@
 import logo from './logo.svg';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import {Navbar, Nav, FormControl, Button, Form} from 'react-bootstrap';
-
-import {LinkContainer} from 'react-router-bootstrap'
-
 import './App.css';
 
 function App() {

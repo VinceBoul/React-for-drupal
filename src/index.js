@@ -7,6 +7,8 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import {ArticlesList} from "./components/ArticlesList";
 import {Header} from "./components/header";
 import {DrupalLogs} from "./components/DrupalLogs";
+import {CreateBlogPage} from "./components/CreateBlogPage";
+import {BlogList} from "./components/BlogList";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -15,6 +17,8 @@ ReactDOM.render(
           <Switch>
               <Route exact path="/" component={App} />
               <Route path="/articles" component={ArticlesList} />
+              <Route path="/blogs" component={BlogList} />
+              <Route path="/create-blog-page" component={CreateBlogPage} />
               <Route path="/drupal-logs" component={DrupalLogs} />
           </Switch>
       </Router>
@@ -26,3 +30,4 @@ ReactDOM.render(
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+

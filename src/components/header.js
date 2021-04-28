@@ -18,6 +18,13 @@ export class Header extends React.Component{
 					<LinkContainer to="/articles">
 						<Nav.Link>Articles</Nav.Link>
 					</LinkContainer>
+
+					<LinkContainer to="/blogs">
+						<Nav.Link>Blogs</Nav.Link>
+					</LinkContainer>
+					<LinkContainer to="/create-blog-page">
+						<Nav.Link>Créer page blog</Nav.Link>
+					</LinkContainer>
 					<LinkContainer to="/drupal-logs">
 						<Nav.Link>Logs</Nav.Link>
 					</LinkContainer>
